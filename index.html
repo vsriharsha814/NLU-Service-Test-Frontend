@@ -4,6 +4,7 @@
 <head>
     <link rel="stylesheet" href="./css/loader.css">
     <script src="./scripts/loader.js"></script>
+    <script src="./scripts/proxy.php"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>NLU Test</title>
     <style>
@@ -114,7 +115,7 @@
 
             // Make an AJAX call to the specified endpoint
             $.ajax({
-                url: 'http://10.204.116.245:8000/',
+                url: 'proxy.php?url=http://10.204.116.245:8000/',
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
