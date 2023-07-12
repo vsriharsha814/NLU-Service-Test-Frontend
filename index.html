@@ -113,9 +113,12 @@
         function searchQueryOnNLU() {
             startLoader();
 
+            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+            const apiUrl = 'http://example.com/api-endpoint';
+
             // Make an AJAX call to the specified endpoint
             $.ajax({
-                url: 'proxy.php?url=http://10.204.116.245:8000/',
+                url: proxyUrl + apiUrl,
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
