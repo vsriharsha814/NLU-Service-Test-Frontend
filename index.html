@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="./css/">
+    <script src="../scripts/loader.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>NLU Test</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+
+
+        .error-message {
+            display: none;
+            padding: 20px;
+            border: 2px solid red;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .description {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .input-container {
+            margin-top: 20px;
+        }
+
+        .input-area {
+            padding: 15px;
+            width: 350px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: box-shadow 0.3s;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .input-area:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-button {
+            margin-top: 10px;
+            margin-left: 10px;
+            font-size: 15px;
+            padding: 15px 25px;
+            border: none;
+            background-color: #263799;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-button:hover {
+            background-color: #455aa0;
+        }
+
+        .output-container {
+            margin-top: 20px;
+        }
+
+        .subtitles-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .subtitle {
+            margin-top: 10px;
+            width: 250px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .normal-text {
+            padding-left: 5px;
+            margin-top: 10px;
+        }
+
+        .normal-text-para {
+            text-align: left;
+            width: 750px;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        function searchQueryOnNLU() {
+            startLoader();
+
+            // Make an AJAX call to the specified endpoint
+            $.ajax({
+                url: '/ms/chatbotaction/hrPolicyNlu',
+                contentType: "application/json",
+                method: "POST",
+                data: JSON.stringify({
+                    query: document.getElementById("searchBar").value
+                }),
+                success: function (response) {
+                    // Handle the response here
+                    console.log(response);
+                    stopLoader();
+                    $('#intent_recognized').html(response.answer);
+                },
+                error: function (error) {
+                    showError(error.message);
+                    stopLoader();
+                    console.log(error);
+                }
+            });
+        }
+
+        function showError(message = "Something went wrong") {
+            var errorMessage = document.querySelector(".error-message");
+            errorMessage.innerHTML = message;
+            errorMessage.style.display = "block";
+        }
+    </script>
+    <script>createLoader()</script>
+    <script>stopLoader()</script>
+    <div class="container">
+        <div class="error-message">Something went wrong</div>
+
+        <div class="title">NLU - HR Policies</div>
+        <p class="description">Please enter your query text in the input below.</p>
+        <div style="padding-bottom:15px;"></div>
+
+        <div class="input-container">
+            <input type="text" class="input-area" id="searchBar" placeholder="Enter your search query">
+            <button class="search-button" id="search_button" onclick="searchQueryOnNLU()">Send</button>
+            <div style="padding-bottom:15px;"></div>
+        </div>
+
+        <div class="output-container">
+            <div class="subtitles-container">
+                <div class="subtitle">Digital Assistant Response:</div>
+                <div class="normal-text-para" id="intent_recognized">-</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
