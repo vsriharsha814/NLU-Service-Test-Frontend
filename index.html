@@ -2,9 +2,8 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="./css/loader.css">
-    <script src="./scripts/loader.js"></script>
-    <script src="./scripts/proxy.php"></script>
+    <link rel="stylesheet" href="../css/loader.css">
+    <script src="../scripts/loader.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>NLU Test</title>
     <style>
@@ -17,11 +16,35 @@
             font-family: Arial, sans-serif;
         }
 
+        .main-app-page {
+            width: 100%;
+            height: 100%;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            width: 100%;
+            background-color: #fdf7f7;
+        }
+
         .container {
             text-align: center;
         }
 
-
+        .error-message {
+            display: none;
+            padding: 20px;
+            border: 2px solid red;
+            margin-bottom: 10px;
+        }
 
         .error-message {
             display: none;
@@ -82,7 +105,6 @@
 
         .subtitles-container {
             display: flex;
-            flex-direction: column;
             justify-content: flex-start;
             align-items: center;
             margin-top: 10px;
@@ -110,59 +132,146 @@
 
 <body>
     <script>
-        function searchQueryOnNLU() {
-            startLoader();
+        function toggleDiv(divId, buttonDivId) {
+            const div = document.getElementById(divId);
+            const otherDivId = divId === 'standardIntentsContainer' ? 'hrPoliciesContainer' : 'standardIntentsContainer';
+            const otherDiv = document.getElementById(otherDivId);
 
-            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-            const apiUrl = 'http://10.204.116.245:8000/';
+            const buttonDiv = document.getElementById(buttonDivId);
+            const buttonOtherDivId = buttonDivId === 'showStandardIntentsContainerButton' ? 'showHrPoliciesContainerButton' : 'showStandardIntentsContainerButton';
+            const buttonOtherDiv = document.getElementById(buttonOtherDivId);
+
+            div.style.display = 'block';
+            otherDiv.style.display = 'none';
+            buttonDiv.style.display = 'block';
+            buttonOtherDiv.style.display = 'none';
+        }
+
+        function searchStandardIntentQueryOnNLU() {
+            startLoader();
 
             // Make an AJAX call to the specified endpoint
             $.ajax({
-                url: proxyUrl + apiUrl,
+                url: '/ms/chatbotaction/pages/mlHRPolicies',
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
-                    query: document.getElementById("searchBar").value
+                    query: document.getElementById("searchBarStandardIntents").value,
+                    apiUrl: window.location.origin
                 }),
                 success: function (response) {
                     // Handle the response here
                     console.log(response);
                     stopLoader();
-                    $('#intent_recognized').html(response.answer);
+                    $('#intent_recognized_standard_intents').html(response.Intent[0]);
+                    $('#confidence_standard_intents').html(response.Score.toString());
                 },
                 error: function (error) {
-                    showError(error.message);
+                    showErrorStandardIntent(error.message);
                     stopLoader();
                     console.log(error);
                 }
             });
         }
 
-        function showError(message = "Something went wrong") {
-            var errorMessage = document.querySelector(".error-message");
+        function showErrorStandardIntent(message = "Something went wrong") {
+            var errorMessage = document.getElementById("error-message-standard-intents");
+            errorMessage.innerHTML = message;
+            errorMessage.style.display = "block";
+        }
+
+        function searchHRPolicyQueryOnNLU() {
+            startLoader();
+
+            // Make an AJAX call to the specified endpoint
+            $.ajax({
+                url: '/ms/chatbotaction/pages/mlHRPolicies',
+                contentType: "application/json",
+                method: "POST",
+                data: JSON.stringify({
+                    query: document.getElementById("searchBarHRPoliceis").value,
+                    apiUrl: window.location.origin
+                }),
+                success: function (response) {
+                    // Handle the response here
+                    console.log(response);
+                    stopLoader();
+                    $('#intent_recognized_hr_policies').html(response.answer);
+                },
+                error: function (error) {
+                    showErrorHrPolicy(error.message);
+                    stopLoader();
+                    console.log(error);
+                }
+            });
+        }
+
+        function showErrorHrPolicy(message = "Something went wrong") {
+            var errorMessage = document.getElementById("error-message-hr-policies");
             errorMessage.innerHTML = message;
             errorMessage.style.display = "block";
         }
     </script>
     <script>createLoader()</script>
     <script>stopLoader()</script>
-    <div class="container">
-        <div class="error-message">Something went wrong</div>
+    <div class="main-app-page">
+        <div class="header">
+            <button onclick="toggleDiv('standardIntentsContainer', 'showHrPoliciesContainerButton')"
+                class="search-button" id="showStandardIntentsContainerButton" style="display: none;">Search Standard
+                Intents</button>
+            <button onclick="toggleDiv('hrPoliciesContainer', 'showStandardIntentsContainerButton')"
+                class="search-button" id="showHrPoliciesContainerButton">Search HR Policies</button>
+        </div>
+        <div style="margin-bottom: 30px;"></div>
 
-        <div class="title">NLU - HR Policies</div>
-        <p class="description">Please enter your query text in the input below.</p>
-        <div style="padding-bottom:15px;"></div>
+        <div class="container" id="standardIntentsContainer">
+            <div class="error-message" id="error-message-standard-intents">Something went wrong</div>
 
-        <div class="input-container">
-            <input type="text" class="input-area" id="searchBar" placeholder="Enter your search query">
-            <button class="search-button" id="search_button" onclick="searchQueryOnNLU()">Send</button>
+            <div class="title">NLU - Standard Intents</div>
+            <p class="description">Please enter your query text in the input below.</p>
             <div style="padding-bottom:15px;"></div>
+
+            <div class="input-container">
+                <input type="text" class="input-area" id="searchBarStandardIntents"
+                    placeholder="Enter your search query">
+                <button class="search-button" id="search_button_standard_intents"
+                    onclick="searchStandardIntentQueryOnNLU()">Send</button>
+                <div style="padding-bottom:15px;"></div>
+            </div>
+
+            <div class="output-container">
+                <div class="subtitles-container">
+                    <div class="subtitle">Intent Recognized:</div>
+                    <div class="normal-text" id="intent_recognized_standard_intents">-</div>
+                </div>
+
+                <div class="subtitles-container">
+                    <div class="subtitle">Confidence Score:</div>
+                    <div class="normal-text" id="confidence_standard_intents">-</div>
+                </div>
+            </div>
         </div>
 
-        <div class="output-container">
-            <div class="subtitles-container">
-                <div class="subtitle">Digital Assistant Response:</div>
-                <div class="normal-text-para" id="intent_recognized">-</div>
+        <div class="container" id="hrPoliciesContainer" style="display: none;">
+            <div class="error-message" id="error-message-hr-policies">Something went wrong</div>
+
+            <div class="title">NLU - HR Policies</div>
+            <p class="description">Please enter your query text in the input below.</p>
+            <div style="padding-bottom:15px;"></div>
+
+            <div class="input-container">
+                <input type="text" class="input-area" id="searchBarHRPoliceis" placeholder="Enter your search query">
+                <button class="search-button" id="search_button_hr_policies"
+                    onclick="searchHRPolicyQueryOnNLU()">Send</button>
+                <div style="padding-bottom:15px;"></div>
+            </div>
+
+            <div class="output-container">
+                <div class="subtitles-container" style="flex-direction: column;">
+                    <div class="subtitle">Digital Assistant Response:</div>
+                    <div style="margin-bottom: 15px;"></div>
+                    <div class="normal-text-para" id="intent_recognized_hr_policies"></div>
+                </div>
             </div>
         </div>
     </div>
