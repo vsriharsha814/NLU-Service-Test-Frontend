@@ -127,11 +127,58 @@
             width: 750px;
             white-space: pre-line;
         }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: #f1f1f1;
+            padding: 10px;
+            width: 200px;
+            height: 100%;
+        }
+
+        .sidebar button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .sidebar button:hover {
+            background-color: #ddd;
+        }
     </style>
 </head>
 
 <body>
     <script>
+        const values = ["Value 1", "Value 2", "Value 3"]; // Array of strings for the sidebar
+
+        function createSidebar() {
+            const sidebar = document.createElement('div');
+            sidebar.classList.add('sidebar');
+
+            for (let i = 0; i < values.length; i++) {
+                const button = document.createElement('button');
+                button.textContent = values[i];
+                button.addEventListener('click', function () {
+                    document.getElementById("searchBar").value = values[i];
+                });
+
+                sidebar.appendChild(button);
+            }
+
+            document.body.prepend(sidebar);
+        }
+
+        createSidebar();
+
         function toggleDiv(divId, buttonDivId) {
             const div = document.getElementById(divId);
             const otherDivId = divId === 'standardIntentsContainer' ? 'hrPoliciesContainer' : 'standardIntentsContainer';
